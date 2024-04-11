@@ -1,4 +1,7 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+}
 
 android {
     compileSdk 34
@@ -7,11 +10,26 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
-        versionName "3.2.0-beta.1"
+        versionName "1.0"
     }
 }
 
 dependencies {
     implementation 'androidx.core:core:1.12.0'
     api 'io.legere:pdfiumandroid:1.0.19'
+}
+
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.DImuthuUpe'
+                artifactId = 'android-pdf-viewer'
+                version = '1.0.1'
+            }
+        }
+    }
 }
