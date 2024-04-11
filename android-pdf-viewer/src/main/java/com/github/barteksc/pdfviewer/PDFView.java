@@ -688,17 +688,18 @@ public class PDFView extends RelativeLayout {
         }
 
         for (Integer page : onDrawPagesNums) {
-            drawWithListener(canvas, page, callbacks.getOnDrawAll());
+            drawWithListener(canvas, page, callbacks.getOnDrawAll(), currentXOffset, currentYOffset);
         }
         onDrawPagesNums.clear();
 
-        drawWithListener(canvas, currentPage, callbacks.getOnDraw());
+        drawWithListener(canvas, currentPage, callbacks.getOnDraw(), currentXOffset, currentYOffset);
 
         // Restores the canvas position
         canvas.translate(-currentXOffset, -currentYOffset);
     }
 
-    private void drawWithListener(Canvas canvas, int page, OnDrawListener listener) {
+    private void drawWithListener(Canvas canvas, int page, OnDrawListener listener,
+                                  float currentXOffset, float currentYOffset) {
         if (listener != null) {
             float translateX, translateY;
             if (swipeVertical) {
@@ -714,7 +715,8 @@ public class PDFView extends RelativeLayout {
             listener.onLayerDrawn(canvas,
                     toCurrentScale(size.getWidth()),
                     toCurrentScale(size.getHeight()),
-                    page, translateX, translateY);
+                    page, translateX, translateY,
+                    currentXOffset, currentYOffset);
 
             canvas.translate(-translateX, -translateY);
         }

@@ -28,7 +28,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.DImuthuUpe'
                 artifactId = 'android-pdf-viewer'
-                version = '1.0.2'
+                version = '1.0.3'
             }
         }
     }
