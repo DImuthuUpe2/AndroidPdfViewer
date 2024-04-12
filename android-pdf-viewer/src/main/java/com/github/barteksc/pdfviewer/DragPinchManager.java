@@ -52,7 +52,6 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         this.animationManager = animationManager;
         gestureDetector = new GestureDetector(pdfView.getContext(), this);
         scaleGestureDetector = new ScaleGestureDetector(pdfView.getContext(), this);
-        pdfView.setOnTouchListener(this);
     }
 
     void enable() {
@@ -284,7 +283,6 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         scaling = false;
     }
 
-    @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (!enabled) {
             return false;

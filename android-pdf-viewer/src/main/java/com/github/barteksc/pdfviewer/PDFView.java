@@ -35,6 +35,8 @@ import android.os.HandlerThread;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SizeF;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.github.barteksc.pdfviewer.exception.PageRenderingException;
@@ -92,7 +94,7 @@ import java.util.List;
  * using {@link #load(DocumentSource, String, int[])}. In this
  * particular case, a userPage of 5 can refer to a documentPage of 17.
  */
-public class PDFView extends RelativeLayout {
+public class PDFView extends RelativeLayout implements View.OnTouchListener {
 
     private static final String TAG = PDFView.class.getSimpleName();
 
@@ -313,6 +315,12 @@ public class PDFView extends RelativeLayout {
 
         pdfiumCore = new PdfiumCore(context, new Config());
         setWillNotDraw(false);
+        this.setOnTouchListener(this);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return dragPinchManager.onTouch(v, event);
     }
 
     private void load(DocumentSource docSource, String password) {
