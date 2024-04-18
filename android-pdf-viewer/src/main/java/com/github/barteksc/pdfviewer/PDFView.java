@@ -318,6 +318,32 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
         this.setOnTouchListener(this);
     }
 
+    public PDFView(Context context, AttributeSet set,
+                   AnimationManager animationManager,
+                   DragPinchManager dragPinchManager) {
+        super(context, set);
+
+        renderingHandlerThread = new HandlerThread("PDF renderer");
+
+        if (isInEditMode()) {
+            return;
+        }
+
+        cacheManager = new CacheManager();
+        this.animationManager = animationManager;
+        this.dragPinchManager = dragPinchManager;
+        pagesLoader = new PagesLoader(this);
+
+        paint = new Paint();
+        debugPaint = new Paint();
+        debugPaint.setStyle(Style.STROKE);
+
+        pdfiumCore = new PdfiumCore(context, new Config());
+        setWillNotDraw(false);
+        this.setOnTouchListener(this);
+    }
+
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         return dragPinchManager.onTouch(v, event);
