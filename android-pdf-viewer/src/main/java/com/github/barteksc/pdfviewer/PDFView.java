@@ -295,7 +295,7 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
     /**
      * Construct the initial view
      */
-    public PDFView(Context context, AttributeSet set) {
+    public PDFView(Context context, AttributeSet set, boolean useDefaultManagers) {
         super(context, set);
 
         renderingHandlerThread = new HandlerThread("PDF renderer");
@@ -305,8 +305,10 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
         }
 
         cacheManager = new CacheManager();
-        animationManager = new AnimationManager(this);
-        dragPinchManager = new DragPinchManager(this, animationManager);
+        if (useDefaultManagers) {
+            animationManager = new AnimationManager(this);
+            dragPinchManager = new DragPinchManager(this, animationManager);
+        }
         pagesLoader = new PagesLoader(this);
 
         paint = new Paint();
@@ -318,31 +320,13 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
         this.setOnTouchListener(this);
     }
 
-    public PDFView(Context context, AttributeSet set,
-                   AnimationManager animationManager,
-                   DragPinchManager dragPinchManager) {
-        super(context, set);
-
-        renderingHandlerThread = new HandlerThread("PDF renderer");
-
-        if (isInEditMode()) {
-            return;
-        }
-
-        cacheManager = new CacheManager();
+    public void setAnimationManager(AnimationManager animationManager) {
         this.animationManager = animationManager;
-        this.dragPinchManager = dragPinchManager;
-        pagesLoader = new PagesLoader(this);
-
-        paint = new Paint();
-        debugPaint = new Paint();
-        debugPaint.setStyle(Style.STROKE);
-
-        pdfiumCore = new PdfiumCore(context, new Config());
-        setWillNotDraw(false);
-        this.setOnTouchListener(this);
     }
 
+    public void setDragPinchManager(DragPinchManager dragPinchManager) {
+        this.dragPinchManager = dragPinchManager;
+    }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
