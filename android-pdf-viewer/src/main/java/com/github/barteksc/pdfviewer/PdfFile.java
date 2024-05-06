@@ -309,6 +309,22 @@ class PdfFile {
         return pdfiumCore.getDocumentMeta(pdfDocument);
     }
 
+    public int getTextRectCount(int pageIndex) {
+        if (pdfDocument == null) {
+            return 0;
+        }
+        int charsCount = pdfiumCore.textPageCountChars(pdfDocument, pageIndex);
+        return pdfiumCore.textPageCountRects(pdfDocument, pageIndex, 0, charsCount);
+    }
+
+    public RectF getTextRect(int pageIndex, int rectIndex) {
+        if (pdfDocument == null) {
+            return null;
+        }
+
+        return pdfiumCore.textPageGetRect(pdfDocument, pageIndex, rectIndex);
+    }
+
     public List<PdfDocument.Bookmark> getBookmarks() {
         if (pdfDocument == null) {
             return new ArrayList<>();
