@@ -325,6 +325,14 @@ class PdfFile {
         return pdfiumCore.textPageGetRect(pdfDocument, pageIndex, rectIndex);
     }
 
+    public RectF textPageGetLooseCharBox(int pageIndex, int charIndex) {
+        if (pdfDocument == null) {
+            return null;
+        }
+
+        return pdfiumCore.textPageGetLooseCharBox(pdfDocument, pageIndex, charIndex);
+    }
+
     public List<PdfDocument.Bookmark> getBookmarks() {
         if (pdfDocument == null) {
             return new ArrayList<>();
