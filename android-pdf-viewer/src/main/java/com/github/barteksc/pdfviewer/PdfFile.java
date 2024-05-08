@@ -325,6 +325,13 @@ class PdfFile {
         return pdfiumCore.textPageGetRect(pdfDocument, pageIndex, rectIndex);
     }
 
+    public RectF textPageGetCharBox(int pageIndex, int charIndex) {
+        if (pdfDocument == null) {
+            return null;
+        }
+
+        return pdfiumCore.textPageGetCharBox(pdfDocument, pageIndex, charIndex);
+    }
     public RectF textPageGetLooseCharBox(int pageIndex, int charIndex) {
         if (pdfDocument == null) {
             return null;

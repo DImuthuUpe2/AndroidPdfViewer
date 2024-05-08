@@ -1405,6 +1405,14 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
         return pdfFile.textPageGetLooseCharBox(pageIndex, charIndex);
     }
 
+    public RectF textPageGetCharBox(int pageIndex, int charIndex) {
+        if (pdfFile == null) {
+            return null;
+        }
+
+        return pdfFile.textPageGetCharBox(pageIndex, charIndex);
+    }
+
     /**
      * Will be empty until document is loaded
      */
