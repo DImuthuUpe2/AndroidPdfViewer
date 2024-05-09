@@ -347,6 +347,15 @@ class PdfFile {
         return pdfiumCore.getTableOfContents(pdfDocument);
     }
 
+    public Integer textPageGetCharIndexAtPos(int pageIndex, double x, double y,
+                                             double xTolerance, double yTolerance) {
+        if (pdfDocument == null) {
+            return -3;
+        }
+
+        return pdfiumCore.textPageGetCharIndexAtPos(pdfDocument, pageIndex, x, y, xTolerance, yTolerance);
+    }
+
     public float getPageRealWidth(int pageIndex) {
         if (pdfDocument == null) {
             return -1;
