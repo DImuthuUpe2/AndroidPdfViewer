@@ -347,6 +347,22 @@ class PdfFile {
         return pdfiumCore.getTableOfContents(pdfDocument);
     }
 
+    public float getPageRealWidth(int pageIndex) {
+        if (pdfDocument == null) {
+            return -1;
+        }
+
+        return pdfiumCore.getPageWidthF(pdfDocument, pageIndex);
+    }
+
+    public float getPageRealHeight(int pageIndex) {
+        if (pdfDocument == null) {
+            return -1;
+        }
+
+        return pdfiumCore.getPageHeightF(pdfDocument, pageIndex);
+    }
+
     public List<PdfDocument.Link> getPageLinks(int pageIndex) {
         int docPage = documentPage(pageIndex);
         return pdfiumCore.getPageLinks(pdfDocument, docPage);

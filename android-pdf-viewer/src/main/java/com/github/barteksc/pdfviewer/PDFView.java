@@ -1383,6 +1383,22 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
         return pdfFile.getMetaData();
     }
 
+    public float getPageRealWidth(int pageIndex) {
+        if (pdfFile == null) {
+            return -1;
+        }
+
+        return pdfFile.getPageRealWidth(pageIndex);
+    }
+
+    public float getPageRealHeight(int pageIndex) {
+        if (pdfFile == null) {
+            return -1;
+        }
+
+        return pdfFile.getPageRealHeight(pageIndex);
+    }
+
     public int getTextRectCount(int pageIndex) {
         if (pdfFile == null) {
             return 0;
