@@ -25,6 +25,7 @@ import com.github.barteksc.pdfviewer.exception.PageRenderingException;
 import com.github.barteksc.pdfviewer.util.FitPolicy;
 import com.github.barteksc.pdfviewer.util.PageSizeCalculator;
 import io.legere.pdfiumandroid.PdfDocument;
+import io.legere.pdfiumandroid.PdfTextPage;
 import io.legere.pdfiumandroid.PdfiumCore;
 import io.legere.pdfiumandroid.util.Size;
 
@@ -79,6 +80,8 @@ class PdfFile {
      */
     private int[] originalUserPages;
 
+    private List<PdfTextPage> pdfTextPages;
+
     PdfFile(PdfiumCore pdfiumCore, PdfDocument pdfDocument, FitPolicy pageFitPolicy, Size viewSize, int[] originalUserPages,
             boolean showTwoPages, boolean isVertical, int spacing, boolean autoSpacing, boolean fitEachPage, boolean isLandscape) {
         this.showTwoPages = showTwoPages;
@@ -111,6 +114,8 @@ class PdfFile {
             }
             originalPageSizes.add(pageSize);
         }
+
+        pdfTextPages = pdfDocument.openTextPages(0, pagesCount - 1);
 
         recalculatePageSizes(viewSize);
     }
@@ -337,7 +342,8 @@ class PdfFile {
             return null;
         }
 
-        return pdfiumCore.textPageGetLooseCharBox(pdfDocument, pageIndex, charIndex);
+        return pdfTextPages.get(charIndex).textPageGetLooseCharBox(charIndex);
+        //return pdfiumCore.textPageGetLooseCharBox(pdfDocument, pageIndex, charIndex);
     }
 
     public List<PdfDocument.Bookmark> getBookmarks() {
