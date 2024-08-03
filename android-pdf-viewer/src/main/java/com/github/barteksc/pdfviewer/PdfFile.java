@@ -31,6 +31,8 @@ import io.legere.pdfiumandroid.util.Size;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 class PdfFile {
 
@@ -80,7 +82,7 @@ class PdfFile {
      */
     private int[] originalUserPages;
 
-    private List<PdfTextPage> pdfTextPages;
+    private Map<Integer, PdfTextPage> pdfTextPages;
 
     PdfFile(PdfiumCore pdfiumCore, PdfDocument pdfDocument, FitPolicy pageFitPolicy, Size viewSize, int[] originalUserPages,
             boolean showTwoPages, boolean isVertical, int spacing, boolean autoSpacing, boolean fitEachPage, boolean isLandscape) {
@@ -115,7 +117,7 @@ class PdfFile {
             originalPageSizes.add(pageSize);
         }
 
-        pdfTextPages = pdfDocument.openTextPages(0, pagesCount - 1);
+        pdfTextPages = new ConcurrentHashMap<>()
 
         recalculatePageSizes(viewSize);
     }
@@ -340,6 +342,10 @@ class PdfFile {
     public RectF textPageGetLooseCharBox(int pageIndex, int charIndex) {
         if (pdfDocument == null) {
             return null;
+        }
+
+        if (!pdfTextPages.containsKey(pageIndex)) {
+            pdfTextPages.put(pageIndex, pdfDocument.openPage(pageIndex).openTextPage());
         }
 
         return pdfTextPages.get(pageIndex).textPageGetLooseCharBox(charIndex);
