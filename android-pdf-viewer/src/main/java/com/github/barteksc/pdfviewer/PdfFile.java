@@ -25,6 +25,7 @@ import com.github.barteksc.pdfviewer.exception.PageRenderingException;
 import com.github.barteksc.pdfviewer.util.FitPolicy;
 import com.github.barteksc.pdfviewer.util.PageSizeCalculator;
 import io.legere.pdfiumandroid.PdfDocument;
+import io.legere.pdfiumandroid.PdfPage;
 import io.legere.pdfiumandroid.PdfTextPage;
 import io.legere.pdfiumandroid.PdfiumCore;
 import io.legere.pdfiumandroid.util.Size;
@@ -117,7 +118,7 @@ class PdfFile {
             originalPageSizes.add(pageSize);
         }
 
-        pdfTextPages = new ConcurrentHashMap<>()
+        pdfTextPages = new ConcurrentHashMap<>();
 
         recalculatePageSizes(viewSize);
     }
@@ -345,10 +346,18 @@ class PdfFile {
         }
 
         if (!pdfTextPages.containsKey(pageIndex)) {
-            pdfTextPages.put(pageIndex, pdfDocument.openPage(pageIndex).openTextPage());
+            PdfPage pdfPage = pdfDocument.openPage(pageIndex);
+            if (pdfPage == null) {
+                return null;
+            }
+            pdfTextPages.put(pageIndex, pdfPage.openTextPage());
         }
 
-        return pdfTextPages.get(pageIndex).textPageGetLooseCharBox(charIndex);
+        PdfTextPage pdfTextPage = pdfTextPages.get(pageIndex);
+        if (pdfTextPage == null) {
+            return null;
+        }
+        return pdfTextPage.textPageGetLooseCharBox(charIndex);
         //return pdfiumCore.textPageGetLooseCharBox(pdfDocument, pageIndex, charIndex);
     }
 
