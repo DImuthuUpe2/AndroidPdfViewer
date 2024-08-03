@@ -342,7 +342,7 @@ class PdfFile {
             return null;
         }
 
-        return pdfTextPages.get(charIndex).textPageGetLooseCharBox(charIndex);
+        return pdfTextPages.get(pageIndex).textPageGetLooseCharBox(charIndex);
         //return pdfiumCore.textPageGetLooseCharBox(pdfDocument, pageIndex, charIndex);
     }
 
