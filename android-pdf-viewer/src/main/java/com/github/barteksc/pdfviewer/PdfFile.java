@@ -318,29 +318,36 @@ class PdfFile {
     }
 
     public int getTextRectCount(int pageIndex) {
-        if (pdfDocument == null) {
+        PdfTextPage pdfTextPage = getTextPage(pageIndex);
+
+        if (pdfTextPage == null) {
             return 0;
         }
-        int charsCount = pdfiumCore.textPageCountChars(pdfDocument, pageIndex);
-        return pdfiumCore.textPageCountRects(pdfDocument, pageIndex, 0, charsCount);
+
+        int charsCount = pdfTextPage.textPageCountChars();
+        return pdfTextPage.textPageCountRects( 0, charsCount);
     }
 
     public RectF getTextRect(int pageIndex, int rectIndex) {
-        if (pdfDocument == null) {
+        PdfTextPage pdfTextPage = getTextPage(pageIndex);
+
+        if (pdfTextPage == null) {
             return null;
         }
-
-        return pdfiumCore.textPageGetRect(pdfDocument, pageIndex, rectIndex);
+        return pdfTextPage.textPageGetRect(rectIndex);
     }
 
     public RectF textPageGetCharBox(int pageIndex, int charIndex) {
-        if (pdfDocument == null) {
+        PdfTextPage pdfTextPage = getTextPage(pageIndex);
+
+        if (pdfTextPage == null) {
             return null;
         }
 
-        return pdfiumCore.textPageGetCharBox(pdfDocument, pageIndex, charIndex);
+        return pdfTextPage.textPageGetCharBox(charIndex);
     }
-    public RectF textPageGetLooseCharBox(int pageIndex, int charIndex) {
+
+    private PdfTextPage getTextPage(int pageIndex) {
         if (pdfDocument == null) {
             return null;
         }
@@ -353,12 +360,26 @@ class PdfFile {
             pdfTextPages.put(pageIndex, pdfPage.openTextPage());
         }
 
-        PdfTextPage pdfTextPage = pdfTextPages.get(pageIndex);
+        return pdfTextPages.get(pageIndex);
+    }
+    public RectF textPageGetLooseCharBox(int pageIndex, int charIndex) {
+
+        PdfTextPage pdfTextPage = getTextPage(pageIndex);
+
         if (pdfTextPage == null) {
             return null;
         }
         return pdfTextPage.textPageGetLooseCharBox(charIndex);
-        //return pdfiumCore.textPageGetLooseCharBox(pdfDocument, pageIndex, charIndex);
+    }
+
+    public int[] textPageSearch(int pageIndex, String searchQuery) {
+        PdfTextPage pdfTextPage = getTextPage(pageIndex);
+
+        if (pdfTextPage == null) {
+            return null;
+        }
+
+        return pdfTextPage.textPageSearch(searchQuery);
     }
 
     public List<PdfDocument.Bookmark> getBookmarks() {
@@ -370,11 +391,12 @@ class PdfFile {
 
     public Integer textPageGetCharIndexAtPos(int pageIndex, double x, double y,
                                              double xTolerance, double yTolerance) {
-        if (pdfDocument == null) {
+
+        PdfTextPage pdfTextPage = getTextPage(pageIndex);
+        if (pdfTextPage == null) {
             return -3;
         }
-
-        return pdfiumCore.textPageGetCharIndexAtPos(pdfDocument, pageIndex, x, y, xTolerance, yTolerance);
+        return pdfTextPage.textPageGetCharIndexAtPos(x, y, xTolerance, yTolerance);
     }
 
     public float getPageRealWidth(int pageIndex) {
