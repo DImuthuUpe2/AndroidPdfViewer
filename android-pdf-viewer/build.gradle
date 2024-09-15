@@ -16,7 +16,7 @@ android {
 
 dependencies {
     implementation 'androidx.core:core:1.12.0'
-    api 'com.github.DImuthuUpe:PdfiumAndroidKt:1.0.14'
+    api 'com.github.DImuthuUpe:PdfiumAndroidKt:1.0.16'
 }
 
 
