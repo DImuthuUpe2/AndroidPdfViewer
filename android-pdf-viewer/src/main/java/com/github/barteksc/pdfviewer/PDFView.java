@@ -293,6 +293,11 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
     private Configurator waitingDocumentConfigurator;
 
     /**
+     * Use bitmap level cache when rendering
+     */
+    private boolean useRenderingCache = false;
+
+    /**
      * Construct the initial view
      */
     public PDFView(Context context, AttributeSet set, boolean useDefaultManagers) {
@@ -1309,6 +1314,14 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
         return annotationRendering;
     }
 
+    public boolean isUseRenderingCache() {
+        return useRenderingCache;
+    }
+
+    public void setUseRenderingCache(boolean useRenderingCache) {
+        this.useRenderingCache = useRenderingCache;
+    }
+
     public void enableRenderDuringScale(boolean renderDuringScale) {
         this.renderDuringScale = renderDuringScale;
     }
@@ -1388,7 +1401,7 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
             return -1;
         }
 
-        return pdfFile.getPageRealWidth(pageIndex);
+        return pdfFile.getPageRealSize(pageIndex).getWidth();
     }
 
     public float getPageRealHeight(int pageIndex) {
@@ -1396,7 +1409,7 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
             return -1;
         }
 
-        return pdfFile.getPageRealHeight(pageIndex);
+        return pdfFile.getPageRealSize(pageIndex).getHeight();
     }
 
     public int getTextRectCount(int pageIndex) {

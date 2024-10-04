@@ -1,4 +1,9 @@
-# WARNING!
+Build and push to local maven repo
+
+```
+./gradlew build
+./gradlew publishToMavenLocal
+```
 
 This fork was made in order to migrate the library to AndroidX and switch to PdfiumAndroidKt.
 

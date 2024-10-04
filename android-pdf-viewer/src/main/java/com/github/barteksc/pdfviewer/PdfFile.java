@@ -31,6 +31,7 @@ import io.legere.pdfiumandroid.PdfiumCore;
 import io.legere.pdfiumandroid.util.Size;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,11 +43,15 @@ class PdfFile {
     private PdfiumCore pdfiumCore;
     private int pagesCount = 0;
     /** Original page sizes */
-    private List<Size> originalPageSizes = new ArrayList<>();
+    private final List<Size> originalPageSizes = new ArrayList<>();
     /** Scaled page sizes */
     private List<SizeF> pageSizes = new ArrayList<>();
+
+    /** Real page sizes */
+    private final Map<Integer, SizeF> realPageSizes = new ConcurrentHashMap<>();
+
     /** Opened pages with indicator whether opening was successful */
-    private SparseBooleanArray openedPages = new SparseBooleanArray();
+    private final SparseBooleanArray openedPages = new SparseBooleanArray();
     /** Page with maximum width */
     private Size originalMaxWidthPageSize = new Size(0, 0);
     /** Page with maximum height */
@@ -84,6 +89,12 @@ class PdfFile {
     private int[] originalUserPages;
 
     private Map<Integer, PdfTextPage> pdfTextPages;
+
+    /**
+     * Cache to hold bitmaps of pages
+     */
+    private final Map<Integer, Map<Rect, Bitmap>> bitmapCache = new ConcurrentHashMap<>();
+
 
     PdfFile(PdfiumCore pdfiumCore, PdfDocument pdfDocument, FitPolicy pageFitPolicy, Size viewSize, int[] originalUserPages,
             boolean showTwoPages, boolean isVertical, int spacing, boolean autoSpacing, boolean fitEachPage, boolean isLandscape) {
@@ -304,10 +315,32 @@ class PdfFile {
         return !openedPages.get(docPage, false);
     }
 
-    public void renderPageBitmap(Bitmap bitmap, int pageIndex, Rect bounds, boolean annotationRendering) {
+    public void renderPageBitmap(Bitmap bitmap, int pageIndex, Rect bounds, boolean annotationRendering,
+                                 boolean useCache) {
         int docPage = documentPage(pageIndex);
+
+        if (useCache) {
+            if (!bitmapCache.containsKey(docPage)) {
+                bitmapCache.put(docPage, new HashMap<>());
+            }
+
+            if (bitmapCache.get(docPage).containsKey(bounds)) {
+                Bitmap sourceBitmap = bitmapCache.get(docPage).get(bounds);
+                int width = sourceBitmap.getWidth();
+                int height = sourceBitmap.getHeight();
+                int[] pixels = new int[width * height];
+
+                sourceBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+                bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+                return;
+            }
+        }
+
         pdfiumCore.renderPageBitmap(pdfDocument, bitmap, docPage,
                 bounds.left, bounds.top, bounds.width(), bounds.height(), annotationRendering);
+
+        if (useCache)
+            bitmapCache.get(docPage).put(bounds, bitmap.copy(bitmap.getConfig(), true));
     }
 
     public PdfDocument.Meta getMetaData() {
@@ -399,12 +432,22 @@ class PdfFile {
         return pdfTextPage.textPageGetCharIndexAtPos(x, y, xTolerance, yTolerance);
     }
 
-    public float getPageRealWidth(int pageIndex) {
-        if (pdfDocument == null) {
-            return -1;
+    public SizeF getPageRealSize(int pageIndex) {
+
+        if (realPageSizes.containsKey(pageIndex)) {
+            return realPageSizes.get(pageIndex);
         }
 
-        return pdfiumCore.getPageWidthF(pdfDocument, pageIndex);
+        if (pdfDocument == null) {
+            return new SizeF(-1, -1);
+        }
+
+        float pageWidthF = pdfiumCore.getPageWidthF(pdfDocument, pageIndex);
+        float pageHeightF = pdfiumCore.getPageHeightF(pdfDocument, pageIndex);
+        realPageSizes.put(pageIndex, new SizeF(pageWidthF, pageHeightF));
+
+        return realPageSizes.get(pageIndex);
+
     }
 
     public float getPageRealHeight(int pageIndex) {
