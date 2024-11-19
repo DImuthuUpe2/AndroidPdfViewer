@@ -355,17 +355,19 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
     }
 
     /**
-     * Go to the given page.
-     *
-     * @param page Page index.
+     * Go to the given y offset on the given page
+     * @param page page number
+     * @param fractionalYOffset a value between 0 and 1
+     * @param withAnimation true if you want to scroll with animation
      */
-    public void jumpTo(int page, boolean withAnimation) {
+    public void jumpTo(int page, float fractionalYOffset, boolean withAnimation) {
         if (pdfFile == null) {
             return;
         }
 
         page = pdfFile.determineValidPageNumberFrom(page);
         float offset = page == 0 ? 0 : -pdfFile.getPageOffset(page, zoom);
+        offset -= fractionalYOffset * pdfFile.getPageSize(page).getHeight() * zoom;
         if (swipeVertical) {
             if (withAnimation) {
                 animationManager.startYAnimation(currentYOffset, offset);
@@ -382,8 +384,12 @@ public class PDFView extends RelativeLayout implements View.OnTouchListener {
         showPage(page);
     }
 
+    public void jumpTo(int page, boolean withAnimation) {
+        jumpTo(page, 0, withAnimation);
+    }
+
     public void jumpTo(int page) {
-        jumpTo(page, false);
+        jumpTo(page, 0, false);
     }
 
     void showPage(int pageNb) {
